@@ -6,43 +6,43 @@ require 'coderay'
 require 'mymedia-pages'
 
 
-  class MyMediaSnippets < MyMediaPages
+class MyMediaSnippets < MyMediaPages
 
-    def initialize(media_type: 'snippets', config: 'mymedia.conf',
-                           css_href: '/snippets/coderay_ruby.css', lang: :ruby)
-      
-      super(media_type: media_type, config: config)
-      
-      @css_href = css_href
-      @lang = lang
+  def initialize(media_type: 'snippets', config: 'mymedia.conf',
+                 css_href: '/snippets/coderay_ruby.css', lang: :ruby, log: log)
+    
+    super(media_type: media_type, config: config, log: log)
 
-    end
+    @css_href = css_href
+    @lang = lang
 
-    def modify_xml(doc,filepath)
+  end
 
-      super do |doc|
+  def modify_xml(doc,filepath)
 
-        r = doc.root.xpath('//pre/code')
+    super do |doc|
 
-        r.each do |node|
+      r = doc.root.xpath('//pre/code')
 
-          parent = node.parent
+      r.each do |node|
 
-          xml = CodeRay.scan(node.text.unescape, @lang).div(:css => :class)
+        parent = node.parent
 
-          doc_code = Rexle.new(xml.sub('code>',"code>\n"))
-          parent.insert_before doc_code.root
-          parent.delete  
-        end
+        xml = CodeRay.scan(node.text.unescape, @lang).div(:css => :class)
 
-        doc
+        doc_code = Rexle.new(xml.sub('code>',"code>\n"))
+        parent.insert_before doc_code.root
+        parent.delete  
       end
 
+      doc
     end
-    
-    def add_css_js(xml)
-      xml.link({rel: 'stylesheet', type: 'text/css', \
-          href: @css_href, media: 'screen, projection, tv'},'')
-    end
+
+  end
+  
+  def add_css_js(xml)
+    xml.link({rel: 'stylesheet', type: 'text/css', \
+        href: @css_href, media: 'screen, projection, tv'},'')
+  end
 
 end
