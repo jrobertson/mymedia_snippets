@@ -9,9 +9,10 @@ require 'mymedia-pages'
 class MyMediaSnippets < MyMediaPages
 
   def initialize(media_type: 'snippets', config: 'mymedia.conf',
-                 css_href: '/snippets/coderay_ruby.css', lang: :ruby, log: log)
-    
-    super(media_type: media_type, config: config, log: log)
+                 css_href: '/snippets/coderay_ruby.css', lang: :ruby,
+                 log: nil, debug: false)
+
+    super(media_type: media_type, config: config, log: log, debug: debug)
 
     @css_href = css_href
     @lang = lang
@@ -20,6 +21,7 @@ class MyMediaSnippets < MyMediaPages
 
   def modify_xml(doc,filepath)
 
+    puts 'mymedia_snippets inside modify_xml()' if @debug
     super do |doc|
 
       r = doc.root.xpath('//pre/code')
@@ -32,14 +34,14 @@ class MyMediaSnippets < MyMediaPages
 
         doc_code = Rexle.new(xml.sub('code>',"code>\n"))
         parent.insert_before doc_code.root
-        parent.delete  
+        parent.delete
       end
 
       doc
     end
 
   end
-  
+
   def add_css_js(xml)
     xml.link({rel: 'stylesheet', type: 'text/css', \
         href: @css_href, media: 'screen, projection, tv'},'')
